@@ -12,7 +12,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          # - windows-latest
+          - windows-latest
           - macos-13 # Intel Mac (x86_64)
           - macos-14 # Apple Silicon Mac (arm64)
     runs-on: ${{ matrix.os }}
@@ -24,20 +24,36 @@ jobs:
           opam-repositories: |
             satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
             default: https://github.com/ocaml/opam-repository.git
+        if: matrix.os != 'windows-latest'
+      - uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: 4.14
+          opam-repositories: |
+            satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
+            sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
+            default: https://github.com/ocaml/opam-repository.git
+        if: runner.os == 'Windows'
       - run: git clone -b ${{ env.BRANCH }} https://github.com/gfngfn/SATySFi.git
       - run: opam pin add --no-action --dev-repo satysfi-util SATySFi
       - run: opam pin add --no-action --dev-repo satysfi-common SATySFi
       - run: opam pin add --no-action --dev-repo saphe SATySFi
       - run: opam pin add --no-action --dev-repo satysfi SATySFi
       - run: opam update
+      # maybe not necessary
+      - run: brew update
+        if: runner.os == 'macOS'
+      - run: apt update
+        if: runner.os == 'Linux'
       - run: opam install saphe satysfi
       - run: SATySFi/install-libs.sh ~/.saphe install
       - run: |
           opam exec -- ldd $(which satysfi)
           opam exec -- ldd $(which saphe)
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
       - run: |
           opam exec -- otool -L $(which satysfi)
           opam exec -- otool -L $(which saphe)
-        if: matrix.os == 'macos-13' || matrix.os == 'macos-14'
+        if: runner.os == 'macOS'
       # TODO: check DLLs on Windows
+      # - run:
+      #   if: runner.os == 'Windows'
