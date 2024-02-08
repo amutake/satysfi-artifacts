@@ -42,7 +42,8 @@ jobs:
       # maybe not necessary
       - run: brew update
         if: runner.os == 'macOS'
-      - run: apt update
+      # maybe not necessary
+      - run: sudo apt update
         if: runner.os == 'Linux'
       - run: opam install saphe satysfi
       - run: SATySFi/install-libs.sh ~/.saphe install
