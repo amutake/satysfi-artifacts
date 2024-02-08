@@ -42,7 +42,7 @@ jobs:
       - run: opam update
       - run: opam depext saphe satysfi
       - run: opam install saphe satysfi
-      - run: cd SATySFi && install-libs.sh ~/.saphe install
+      - run: cd SATySFi && ./install-libs.sh ~/.saphe install
       - run: |
           opam exec -- ldd $(which satysfi)
           opam exec -- ldd $(which saphe)
