@@ -12,8 +12,9 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
-          - macos-13 # Intel Mac (x86_64)
+          # - windows-latest
+          # core-unix cannot be installed on windows
+          - macos-latest # Intel Mac (x86_64)
           - macos-14 # Apple Silicon Mac (arm64)
     runs-on: ${{ matrix.os }}
     steps:
@@ -39,12 +40,7 @@ jobs:
       - run: opam pin add --no-action --dev-repo saphe SATySFi
       - run: opam pin add --no-action --dev-repo satysfi SATySFi
       - run: opam update
-      # maybe not necessary
-      - run: brew update
-        if: runner.os == 'macOS'
-      # maybe not necessary
-      - run: sudo apt update
-        if: runner.os == 'Linux'
+      - run: opam depext saphe satysfi
       - run: opam install saphe satysfi
       - run: SATySFi/install-libs.sh ~/.saphe install
       - run: |
