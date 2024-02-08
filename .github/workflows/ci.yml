@@ -22,18 +22,19 @@ jobs:
       - uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: 4.14
+          allow-prelease-opam: true # to speed up
           opam-repositories: |
             satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
             default: https://github.com/ocaml/opam-repository.git
         if: matrix.os != 'windows-latest'
-      - uses: ocaml/setup-ocaml@v2
-        with:
-          ocaml-compiler: 4.14
-          opam-repositories: |
-            satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
-            sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
-            default: https://github.com/ocaml/opam-repository.git
-        if: runner.os == 'Windows'
+      # - uses: ocaml/setup-ocaml@v2
+      #   with:
+      #     ocaml-compiler: 4.14
+      #     opam-repositories: |
+      #       satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
+      #       sunset: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
+      #       default: https://github.com/ocaml/opam-repository.git
+      #   if: runner.os == 'Windows'
       - run: git clone -b ${{ env.BRANCH }} https://github.com/gfngfn/SATySFi.git
       - run: opam pin add --no-action --dev-repo satysfi-util SATySFi
       - run: opam pin add --no-action --dev-repo satysfi-common SATySFi
@@ -44,12 +45,14 @@ jobs:
       - run: opam install saphe satysfi
       - run: cd SATySFi && ./install-libs.sh ~/.saphe install
       - run: |
-          opam exec -- ldd $(which satysfi)
-          opam exec -- ldd $(which saphe)
+          eval $(opam env)
+          ldd $(which satysfi)
+          ldd $(which saphe)
         if: runner.os == 'Linux'
       - run: |
-          opam exec -- otool -L $(which satysfi)
-          opam exec -- otool -L $(which saphe)
+          eval $(opam env)
+          otool -L $(which satysfi)
+          otool -L $(which saphe)
         if: runner.os == 'macOS'
       # TODO: check DLLs on Windows
       # - run:
