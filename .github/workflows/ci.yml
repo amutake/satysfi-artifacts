@@ -3,6 +3,9 @@ name: ci
 on:
   push:
 
+env:
+  BRANCH: dev-0-1-0-separate-saphe-from-satysfi
+
 jobs:
   build:
     strategy:
@@ -18,3 +21,20 @@ jobs:
       - uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: 4.14
+      - run: git clone -b ${{ env.BRANCH }} https://github.com/gfngfn/SATySFi.git
+      - run: opam pin add --no-action --dev-repo satysfi-util SATySFi
+      - run: opam pin add --no-action --dev-repo satysfi-common SATySFi
+      - run: opam pin add --no-action --dev-repo saphe SATySFi
+      - run: opam pin add --no-action --dev-repo satysfi SATySFi
+      - run: opam update
+      - run: opam install saphe satysfi
+      - run: SATySFi/install-libs.sh ~/.saphe install
+      - run: |
+          opam exec -- ldd $(which satysfi)
+          opam exec -- ldd $(which saphe)
+        if: matrix.os == 'ubuntu-latest'
+      - run: |
+          opam exec -- otool -L $(which satysfi)
+          opam exec -- otool -L $(which saphe)
+        if: matrix.os == 'macos-13' || matrix.os == 'macos-14'
+      # TODO: check DLLs on Windows
