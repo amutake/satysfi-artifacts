@@ -22,7 +22,7 @@ jobs:
       - uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: 4.14
-          allow-prelease-opam: true # to speed up
+          allow-prerelease-opam: true # to speed up
           opam-repositories: |
             satysfi-external: https://github.com/gfngfn/satysfi-external-repo.git
             default: https://github.com/ocaml/opam-repository.git
